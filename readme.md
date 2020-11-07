@@ -1,6 +1,6 @@
-Vue Boilerplate
+Shiny Counter
 ===============
-Boilerplate for simple Vue (single-page-app) projects.
+Made with [Vue Boilerplate](https://github.com/jayzces/vue-boilerplate)
 
 ### Local Server
 ```

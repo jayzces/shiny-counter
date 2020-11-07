@@ -1,7 +1,7 @@
 {
-  "name": "vue-boilerplate",
+  "name": "shiny-counter",
   "version": "1.0.0",
-  "description": "Boilerplate for Vue Projects.",
+  "description": "Shiny Counter",
   "main": "index.js",
   "scripts": {
     "serve": "vue-cli-service serve",
