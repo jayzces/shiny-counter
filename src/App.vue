@@ -2,13 +2,17 @@
     <div class="app">
         <div class="container">
             <div class="count">
-                <h1>{{ counter }}</h1>
-                <p>Encounters</p>
+                <h1>{{ hunt.count }}
+                    <button class="edit-btn" title="Edit">
+                        <EditIcon />
+                    </button>
+                </h1>
+                <p>{{ hunt.display }}</p>
             </div>
 
             <div class="buttons">
                 <div class="deduct">
-                    <button @click="deduct()">Deduct</button>
+                    <button class="btn" @click="deduct()">Deduct</button>
                     <div class="tags">
                         <span class="tag"
                             v-for="tag in deductKeys"
@@ -16,7 +20,7 @@
                     </div>
                 </div>
                 <div class="add">
-                    <button @click="add()">Add</button>
+                    <button class="btn" @click="add()">Add</button>
                     <div class="tags">
                         <span class="tag"
                             v-for="tag in addKeys"
@@ -31,9 +35,15 @@
 <script>
     export default {
         name: 'App',
+        components: {
+            EditIcon: () => import('./svg/edit.svg')
+        },
         data() {
             return {
-                counter: 0,
+                hunt: {
+                    count: 0,
+                    display: 'Encounters'
+                },
                 addKeys: [
                     {
                         key: '+',
@@ -57,15 +67,20 @@
                         key: 'ArrowDown',
                         display: '↓'
                     }
-                ]
+                ],
+                localStorageKey: 'shiny-counter-hunts'
             }
         },
         methods: {
             add() {
-                this.counter++
+                this.hunt.count++
+                localStorage
+                    .setItem(this.localStorageKey, JSON.stringify(this.hunt))
             },
             deduct() {
-                if (this.counter > 0) this.counter--
+                if (this.hunt.count > 0) this.hunt.count--
+                localStorage
+                    .setItem(this.localStorageKey, JSON.stringify(this.hunt))
             },
             ifKeyExists(arr, key) {
                 let check = false
@@ -74,7 +89,13 @@
             }
         },
         mounted() {
-            document.addEventListener('keyup', e => {
+            // get hunts from local storage
+            let bytes = localStorage.getItem(this.localStorageKey)
+            if (!!bytes) {
+                this.hunt = JSON.parse(bytes)
+            }
+
+            document.addEventListener('keydown', e => {
                 let key = e.key
                 if (this.ifKeyExists(this.addKeys, key)) this.add()
                 else if (this.ifKeyExists(this.deductKeys, key)) this.deduct()
@@ -102,13 +123,41 @@
         text-align: center;
     }
 
-    h1,
+    h1 {
+        margin: 0 auto;
+        position: relative;
+        font-size: 3.5rem;
+        width: max-content;
+        max-width: 100%;
+    }
+
     p {
         margin: 0;
     }
 
-    h1 {
-        font-size: 3.5rem;
+    .edit-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        right: -2.5rem;
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 1;
+        opacity: 0;
+    }
+
+    .count:hover .edit-btn {
+        opacity: 1;
+    }
+
+    .edit-btn svg {
+        width: 16px;
+        height: 16px;
     }
 
     .buttons {
@@ -118,15 +167,14 @@
         margin-top: 1.5rem;
     }
 
-    button {
+    .btn {
         display: block;
         padding: 0.75rem 1.25rem;
         width: 100%;
-        border: 0;
-        border-radius: 4px;
+        cursor: pointer;
     }
 
-    .deduct button {
+    .deduct .btn {
         background-color: rgba(220, 20, 60, 0.1);
         color: rgb(220, 20, 60);
     }
