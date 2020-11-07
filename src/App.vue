@@ -1,5 +1,7 @@
 <template>
     <div class="app">
+        <button class="reset-btn" @click="reset()">Reset</button>
+
         <div class="container">
             <div class="count">
                 <div class="editing" v-if="editing">
@@ -85,13 +87,18 @@
                 this.saveToLocalStorage()
             },
             deduct() {
-                if (this.hunt.count > 0) this.count--
+                if (this.count > 0) this.count--
                 this.saveToLocalStorage()
             },
             ifKeyExists(arr, key) {
                 let check = false
                 arr.forEach(pair => pair.key === key ? check = true : null)
                 return check
+            },
+            reset() {
+                this.count = 0;
+                this.display = 'Encounters';
+                this.saveToLocalStorage();
             },
             save() {
                 this.editing = false
@@ -115,8 +122,12 @@
 
             document.addEventListener('keydown', e => {
                 let key = e.key
-                if (this.ifKeyExists(this.addKeys, key)) this.add()
-                else if (this.ifKeyExists(this.deductKeys, key)) this.deduct()
+                if (!this.editing) {
+                    if (this.ifKeyExists(this.addKeys, key))
+                        this.add()
+                    else if (this.ifKeyExists(this.deductKeys, key))
+                        this.deduct()
+                }
             })
         }
     }
@@ -140,6 +151,15 @@
         width: 100vw;
         text-align: center;
     }
+
+    .reset-btn {
+        background-color: transparent;
+        position: fixed;
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 0.75rem
+    }
+
     h1 {
         margin: 0 auto;
         position: relative;
@@ -163,7 +183,6 @@
         height: 28px;
         font-size: 1rem;
         border-radius: 50%;
-        cursor: pointer;
         z-index: 1;
         opacity: 0;
     }
@@ -208,7 +227,6 @@
         display: block;
         padding: 0.75rem 1.25rem;
         width: 100%;
-        cursor: pointer;
     }
 
     .deduct .btn {
