@@ -1,3 +1,12 @@
+:root {
+    --blue:         rgba(0, 170, 255, 1);
+    --blue-light:   rgba(0, 170, 255, 0.1);
+    --green:        rgba(39, 194, 76, 1);
+    --green-light:  rgba(39, 194, 76, 0.1);
+    --red:          rgba(220, 20, 60, 1);
+    --red-light:    rgba(220, 20, 60, 0.1);
+}
+
 html {
     font-family: 'Poppins', sans-serif;
     font-size: 14px;
@@ -8,10 +17,20 @@ body {
     margin: 0;
 }
 
-button {
+button,
+input {
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
+}
+
+button {
     border: 0;
+    border-radius: 4px;
+}
+
+[type="text"],
+[type="number"] {
+    border: 1px solid #CCC;
     border-radius: 4px;
 }

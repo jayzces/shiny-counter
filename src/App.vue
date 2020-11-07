@@ -2,15 +2,24 @@
     <div class="app">
         <div class="container">
             <div class="count">
-                <h1>{{ hunt.count }}
-                    <button class="edit-btn" title="Edit">
-                        <EditIcon />
-                    </button>
-                </h1>
-                <p>{{ hunt.display }}</p>
+                <div class="editing" v-if="editing">
+                    <input type="number" min="0" v-model="count" />
+                    <input type="text"
+                        placeholder="Pokemon"
+                        v-model="display" />
+                    <button class="btn" @click="save()">Save</button>
+                </div>
+                <div class="display" v-else>
+                    <h1>{{ count }}
+                        <button class="edit-btn" title="Edit">
+                            <EditIcon @click="editing = true"  />
+                        </button>
+                    </h1>
+                    <p>{{ display }}</p>
+                </div>
             </div>
 
-            <div class="buttons">
+            <div class="buttons" v-if="!editing">
                 <div class="deduct">
                     <button class="btn" @click="deduct()">Deduct</button>
                     <div class="tags">
@@ -40,10 +49,8 @@
         },
         data() {
             return {
-                hunt: {
-                    count: 0,
-                    display: 'Encounters'
-                },
+                count: 0,
+                display: 'Encounters',
                 addKeys: [
                     {
                         key: '+',
@@ -68,31 +75,42 @@
                         display: '↓'
                     }
                 ],
-                localStorageKey: 'shiny-counter-hunts'
+                localStorageKey: 'shiny-counter-hunts',
+                editing: false
             }
         },
         methods: {
             add() {
-                this.hunt.count++
-                localStorage
-                    .setItem(this.localStorageKey, JSON.stringify(this.hunt))
+                this.count++
+                this.saveToLocalStorage()
             },
             deduct() {
-                if (this.hunt.count > 0) this.hunt.count--
-                localStorage
-                    .setItem(this.localStorageKey, JSON.stringify(this.hunt))
+                if (this.hunt.count > 0) this.count--
+                this.saveToLocalStorage()
             },
             ifKeyExists(arr, key) {
                 let check = false
                 arr.forEach(pair => pair.key === key ? check = true : null)
                 return check
+            },
+            save() {
+                this.editing = false
+                this.saveToLocalStorage()
+            },
+            saveToLocalStorage() {
+                localStorage.setItem(this.localStorageKey, JSON.stringify({
+                    count: this.count,
+                    display: this.display
+                }))
             }
         },
         mounted() {
             // get hunts from local storage
             let bytes = localStorage.getItem(this.localStorageKey)
             if (!!bytes) {
-                this.hunt = JSON.parse(bytes)
+                let hunt = JSON.parse(bytes)
+                this.count = hunt.count
+                this.display = hunt.display
             }
 
             document.addEventListener('keydown', e => {
@@ -122,7 +140,6 @@
         width: 100vw;
         text-align: center;
     }
-
     h1 {
         margin: 0 auto;
         position: relative;
@@ -160,6 +177,26 @@
         height: 16px;
     }
 
+    [type="text"],
+    [type="number"] {
+        display: block;
+        padding: 0.5rem 1rem;
+        text-align: center;
+        width: calc(100% - 2rem);
+    }
+
+    [type="number"] {
+        font-size: 3.5rem;
+    }
+
+    .editing input:not(:first-child) {
+        margin-top: 4px;
+    }
+
+    .editing .btn {
+        margin-top: 1rem;
+    }
+
     .buttons {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -175,13 +212,13 @@
     }
 
     .deduct .btn {
-        background-color: rgba(220, 20, 60, 0.1);
-        color: rgb(220, 20, 60);
+        background-color: var(--red-light);
+        color: var(--red);
     }
 
     .add button {
-        background-color: rgba(39, 194, 76, 0.1);
-        color: rgb(39, 194, 76);
+        background-color: var(--green-light);
+        color: var(--green);
     }
 
     .tags {
@@ -191,7 +228,7 @@
     }
 
     .tag {
-        background-color: rgba(0, 170, 255, 0.1);
+        background-color: var(--blue-light);
         display: inline-block;
         margin: 2px;
         padding: 0.25rem 0.5rem;
